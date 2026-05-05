@@ -21,6 +21,11 @@
   --color-bg-card: #ffffff;
   --color-text: #212121;
   --color-text-muted: #5f6368;
+  --color-border: #e0e0e0;
+  --color-navbar: rgba(255, 255, 255, 0.92);
+  --color-navbar-text: #212121;
+  --color-navbar-border: rgba(0, 0, 0, 0.1);
+  --color-icon-bg: rgba(0, 0, 0, 0.05);
   
   /* Feedback */
   --color-error: #e21b3c;
@@ -36,6 +41,26 @@
   
   --font-family: 'Montserrat', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark {
+  --color-bg: #0b0f1a;
+  --color-bg-card: rgba(30, 41, 59, 0.7);
+  --color-text: #f1f5f9;
+  --color-text-muted: #94a3b8;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-navbar: rgba(11, 15, 26, 0.85);
+  --color-navbar-text: #f1f5f9;
+  --color-navbar-border: rgba(255, 255, 255, 0.08);
+  --color-icon-bg: rgba(255, 255, 255, 0.05);
+  
+  /* Aclaramos un poco el verde para que resalte en oscuro */
+  --color-primary: #22c55e;
+  --color-primary-bright: #4ade80;
+  
+  --shadow-sm: 0 4px 6px rgba(0,0,0,0.4);
+  --shadow-md: 0 8px 16px rgba(0,0,0,0.5);
+  --shadow-lg: 0 12px 24px rgba(0,0,0,0.6);
 }
 
 * {
@@ -55,7 +80,10 @@ body {
   padding-top: 110px; /* Space for the floating navbar */
 }
 
-/* Base Hover for Cards */
+.custom-card {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
 .hover-lift {
   transition: var(--transition-smooth);
 }
@@ -121,25 +149,24 @@ body {
   transform: translateX(-50%);
   width: 95%;
   max-width: 1200px;
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--color-navbar);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   border-radius: 20px;
-  border: 1.5px solid rgba(0, 0, 0, 0.1); /* Darker border for contrast */
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.1), 
-    0 2px 4px -1px rgba(0, 0, 0, 0.06),
-    0 20px 25px -5px rgba(0, 0, 0, 0.1); /* Stronger shadow */
+  border: 1.5px solid var(--color-navbar-border);
+  box-shadow: var(--shadow-lg);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 28px;
   z-index: 1000;
   transition: var(--transition-smooth);
+  color: var(--color-navbar-text);
 }
 
 .navbar:hover {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--color-navbar);
+  opacity: 0.98;
   width: 97%;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
@@ -269,10 +296,10 @@ body {
 .auth-card {
   width: 100%;
   max-width: 430px;
-  background-color: #ffffff;
+  background-color: var(--color-bg-card);
   border-radius: 10px;
   padding: 40px 32px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
   border-top: 4px solid var(--color-primary);
 }
 
@@ -495,12 +522,12 @@ body {
 }
 
 .stat-card {
-  background: #ffffff;
+  background: var(--color-bg-card);
   border-radius: 10px;
   padding: 25px;
   text-align: center;
   border: 1px solid var(--color-border);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
 }
 
 .stat-card .stat-value {
@@ -540,13 +567,13 @@ body {
 }
 
 .modal-content {
-  background: #ffffff;
+  background: var(--color-bg-card);
   border-radius: 10px;
   padding: 30px;
   max-width: 480px;
   width: 100%;
   position: relative;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-lg);
   border-top: 4px solid var(--color-primary);
   max-height: 80vh;
   overflow-y: auto;

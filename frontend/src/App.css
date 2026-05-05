@@ -69,6 +69,46 @@ body {
   padding: 0 20px;
 }
 
+/* ─── Public Page Backgrounds ───────────────────────────────── */
+.page-with-background {
+  position: relative;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  margin-top: -110px;
+  padding-top: 110px;
+}
+
+.page-with-background::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40vh;
+  background: linear-gradient(to bottom, rgba(179, 229, 252, 1) 0vh, rgba(179, 229, 252, 0.9) 8vh, rgba(179, 229, 252, 0) 35vh);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.background-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+.auth-page .background-overlay,
+.landing-page .background-overlay {
+  display: none;
+}
+
+.page-content {
+  position: relative;
+  z-index: 2;
+}
+
 /* ─── Innovative Navbar (Floating Glass) ────────────────────────── */
 .navbar {
   position: fixed;
@@ -140,28 +180,13 @@ body {
 .hero {
   text-align: center;
   padding: 120px 20px 100px;
-  background: radial-gradient(circle at top left, var(--color-primary-glow) 0%, var(--color-primary-bright) 30%, var(--color-primary) 70%, var(--color-primary-dark) 100%);
+  background: transparent;
   color: #ffffff;
   position: relative;
   overflow: hidden;
 }
 
-.hero::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-  pointer-events: none;
-  animation: pulse-glow 8s infinite alternate ease-in-out;
-}
 
-@keyframes pulse-glow {
-  from { opacity: 0.3; transform: scale(1); }
-  to { opacity: 0.6; transform: scale(1.1); }
-}
 
 .hero h1 {
   font-size: 3.5rem;
@@ -225,7 +250,8 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #eceff1 0%, #cfd8dc 100%);
+  background-image: linear-gradient(135deg, #eceff1 0%, #cfd8dc 100%);
+  background-color: #eceff1;
 }
 
 .auth-container {
@@ -304,6 +330,159 @@ body {
   color: var(--color-text-muted);
 }
 
+/* ─── Dashboard Nuevo (Persona 4) ─────────────────────────────── */
+/* Header con gradiente */
+.dashboard-header-new {
+  text-align: center;
+  padding: 40px 30px;
+  margin-bottom: 50px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-bright) 50%, var(--color-primary-glow) 100%);
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(27, 94, 32, 0.25);
+}
+
+.dashboard-header-new::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 50%);
+  animation: header-glow 6s infinite alternate ease-in-out;
+}
+
+@keyframes header-glow {
+  from { transform: translate(-10%, -10%); }
+  to { transform: translate(10%, 10%); }
+}
+
+.dashboard-header-new h1 {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-header-new p {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+}
+
+/* Grid principal responsivo - 3 columnas desktop → 1 columna mobile */
+.dashboard-main-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-main-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-main-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-header-new h1 {
+    font-size: 2rem;
+  }
+}
+
+/* Colores distintivos para secciones */
+.section-join {
+  border-top: 4px solid var(--color-kahoot-yellow) !important;
+}
+
+.section-join .section-icon {
+  background-color: rgba(216, 158, 0, 0.15) !important;
+  color: var(--color-kahoot-yellow) !important;
+}
+
+.section-create {
+  border-top: 4px solid var(--color-kahoot-red) !important;
+}
+
+.section-create .section-icon {
+  background-color: rgba(226, 27, 60, 0.15) !important;
+  color: var(--color-kahoot-red) !important;
+}
+
+.section-ranking {
+  border-top: 4px solid var(--color-kahoot-purple) !important;
+}
+
+.section-ranking .section-icon {
+  background-color: rgba(70, 23, 143, 0.15) !important;
+  color: var(--color-kahoot-purple) !important;
+}
+
+.section-import {
+  border-top: 4px solid var(--color-kahoot-blue) !important;
+}
+
+.section-import .section-icon {
+  background-color: rgba(5, 66, 185, 0.15) !important;
+  color: var(--color-kahoot-blue) !important;
+}
+
+/* Grid de stats */
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  margin-bottom: 50px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Grid de desafíos */
+.dashboard-challenges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+/* Section title con icono */
+.dashboard-section-title {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--color-primary);
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboard-section-title .title-icon {
+  color: var(--color-kahoot-red);
+}
+
+/* Logout button */
+.dashboard-logout {
+  text-align: center;
+  margin-top: 60px;
+  margin-bottom: 40px;
+}
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -365,6 +544,8 @@ body {
   position: relative;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   border-top: 4px solid var(--color-primary);
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .modal-close {
@@ -446,3 +627,295 @@ body {
     font-size: 1.8rem;
   }
 }
+
+/* ─── Requirement 2: GameBoard - Sesión Activa (Persona 2) ───────────────────── */
+
+/* Badge del nickname del jugador */
+.player-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, var(--color-kahoot-yellow), var(--color-kahoot-red));
+  border-radius: 50px;
+  color: white;
+  font-weight: 900;
+  font-size: 1.2rem;
+  box-shadow: var(--shadow-md), 0 4px 0 rgba(0,0,0,0.2);
+  margin-bottom: 24px;
+  letter-spacing: 0.5px;
+}
+
+/* Lista de ranking */
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+  width: 100%;
+}
+
+/* Item base del ranking */
+.ranking-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: #f5f5f5;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: var(--transition-smooth);
+  font-weight: 600;
+}
+
+/* Top 3 con fondo dorado suave */
+.ranking-item.top-three {
+  background: linear-gradient(135deg, #fff9e6, #ffffff);
+  border-color: var(--color-kahoot-yellow);
+  font-weight: 700;
+}
+
+/* Jugador actual resaltado en verde */
+.ranking-item.current-player {
+  background: rgba(27, 94, 32, 0.1);
+  border-color: var(--color-primary);
+  border-width: 3px;
+  box-shadow: 0 4px 12px rgba(27, 94, 32, 0.2);
+}
+
+/* Combinación: top 3 + jugador actual */
+.ranking-item.top-three.current-player {
+  background: linear-gradient(135deg, rgba(27, 94, 32, 0.1), #fff9e6);
+  border-color: var(--color-primary);
+}
+
+/* Medalla emoji */
+.ranking-medal {
+  font-size: 1.4rem;
+  margin-right: 6px;
+  line-height: 1;
+}
+
+/* Nombre del jugador en el ranking */
+.ranking-player-name {
+  flex: 1;
+  text-align: left;
+  font-size: 1rem;
+}
+
+/* Puntaje del jugador */
+.ranking-player-score {
+  font-weight: 900;
+  font-size: 1rem;
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+/* Sala de espera: lista de participantes */
+.waiting-room-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  text-align: left;
+}
+
+.waiting-room-item {
+  padding: 10px 16px;
+  background: #f5f5f5;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-left: 3px solid var(--color-kahoot-yellow);
+}
+
+/* Header de la sesión activa */
+.session-active-header {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--color-primary);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Título de sección dentro del juego */
+.ranking-section-title {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ─── Requirement 3: Question Display (Persona 3) ───────────────────────────── */
+
+/* Contenedor principal de la pregunta */
+.question-display {
+  padding: 24px 16px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+/* Header con numeración de pregunta */
+.question-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.question-number {
+  display: inline-block;
+  padding: 6px 20px;
+  background: var(--color-primary);
+  color: white;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+/* Enunciado de la pregunta */
+.question-text {
+  margin-bottom: 28px;
+}
+
+.question-text h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--color-text);
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Grid de opciones de respuesta */
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 480px) {
+  .options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question-text h2 {
+    font-size: 1.2rem;
+  }
+}
+
+/* Card base de cada opción */
+.option-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  text-align: left;
+  width: 100%;
+  font-family: var(--font-family);
+}
+
+.option-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-lg);
+}
+
+.option-card:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Variantes de color Kahoot */
+.option-purple {
+  background: var(--color-kahoot-purple);
+  box-shadow: 0 4px 0 #331169;
+}
+
+.option-blue {
+  background: var(--color-kahoot-blue);
+  box-shadow: 0 4px 0 #04328a;
+}
+
+.option-red {
+  background: var(--color-kahoot-red);
+  box-shadow: 0 4px 0 #a9132d;
+}
+
+.option-yellow {
+  background: var(--color-kahoot-yellow);
+  box-shadow: 0 4px 0 #a17600;
+}
+
+/* Letra identificadora de la opción (A, B, C, D) */
+.option-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+/* Texto de la opción */
+.option-text {
+  flex: 1;
+  line-height: 1.3;
+}
+
+/* Estado vacío de preguntas */
+.questions-empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+}
+
+/* Loading de preguntas */
+.questions-loading {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  font-style: italic;
+}
+
+/* ─── Pantalla Completa del Juego ─────────────────────────────── */
+.fullscreen-game-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  background-color: var(--color-bg);
+  background-image: linear-gradient(135deg, var(--color-kahoot-blue) 0%, var(--color-kahoot-purple) 100%);
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.fullscreen-game-container {
+  width: 100%;
+  max-width: 800px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+

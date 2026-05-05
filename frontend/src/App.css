@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* ─── Variables y Reset (Estilo Kahoot + Uniputumayo) ─────────────────────────── */
 :root {
   /* Marca Institucional - Refined with brightness and depth */

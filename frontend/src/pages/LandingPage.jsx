@@ -5,6 +5,7 @@ import MyButton from "../components/ui/MyButton";
 import CustomCard from "../components/ui/CustomCard";
 import GameDemo from "../components/GameDemo";
 import { Zap, Trophy, Target, Award, Rocket, Smile, ArrowRight } from "lucide-react";
+import landingBackground from "../assets/backgrounds/ITP-3.jpeg";
 
 /**
  * LandingPage - Estilo Kahoot + Uniputumayo
@@ -14,7 +15,12 @@ export default function LandingPage() {
   const [showDemo, setShowDemo] = useState(false);
 
   return (
-    <div className="landing-page">
+    <div
+      className="landing-page page-with-background"
+      style={{ backgroundImage: `url(${landingBackground})` }}
+    >
+      <div className="background-overlay" />
+      <div className="page-content">
       {/* ─── Hero Section: Innovative & Impactful ──────────── */}
       <section className="hero">
         <div className="container">
@@ -144,6 +150,7 @@ export default function LandingPage() {
           <p style={{ opacity: 0.5, fontSize: "0.85rem" }}>© 2026 Robin HOOT — El poder de aprender jugando.</p>
         </div>
       </footer>
+      </div>
     </div>
   );
 }

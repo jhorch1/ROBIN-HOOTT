@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import MyButton from "./MyButton";
-import { Target, User, LayoutDashboard, LogOut, LogIn } from "lucide-react";
+import { Target, User, LayoutDashboard, LogOut, LogIn, Moon, Sun } from "lucide-react";
+import { useState, useEffect } from "react";
 
 /**
  * Navbar - Barra de navegación institucional (Estilo Uniputumayo)
@@ -9,6 +10,26 @@ import { Target, User, LayoutDashboard, LogOut, LogIn } from "lucide-react";
 export default function Navbar() {
   const { usuario, cerrarSesion } = useAuth();
   const navigate = useNavigate();
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+      setIsDark(true);
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      setIsDark(false);
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setIsDark(true);
+    }
+  };
 
   const handleLogout = () => {
     cerrarSesion();
@@ -34,7 +55,17 @@ export default function Navbar() {
         Robin HOOT
       </Link>
 
-      <div className="navbar-links">
+      <div className="navbar-links" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        {/* Botón de Dark Mode - Exclusivo Tailwind */}
+        <button 
+          onClick={toggleDarkMode} 
+          className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Toggle Dark Mode"
+          style={{ border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+        >
+          {isDark ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+
         {usuario ? (
           <>
             <div className="navbar-user">
@@ -72,6 +103,3 @@ export default function Navbar() {
     </nav>
   );
 }
-
-
-

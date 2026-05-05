@@ -1,13 +1,39 @@
+import axios from 'axios';
+
 // ─── Configuración de API ───────────────────────────────────────────────────────
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
+export const apiInstance = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL || "",
+  withCredentials: true,
+});
 
-const buildApiUrl = (path) => `${BACKEND_URL}${path}`;
+apiInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token && !config.headers.Authorization) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
-const fetchApi = (path, options = {}) => {
-  return fetch(buildApiUrl(path), {
-    credentials: "include",
-    ...options,
-  });
+const fetchApi = async (path, options = {}) => {
+  try {
+    const response = await apiInstance({
+      url: path,
+      method: options.method || 'GET',
+      data: options.body && typeof options.body === 'string' ? JSON.parse(options.body) : options.body,
+      headers: options.headers,
+    });
+    return {
+      ok: true,
+      json: async () => response.data,
+      status: response.status
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      json: async () => error.response?.data || { message: error.message },
+      status: error.response?.status || 500
+    };
+  }
 };
 
 const parseErrorMessage = async (response, fallbackMessage) => {
@@ -24,7 +50,7 @@ const parseErrorMessage = async (response, fallbackMessage) => {
  */
 export const getBackendData = async () => {
   const token = localStorage.getItem("token");
-  console.log(`[API] Solicitando datos de: ${buildApiUrl("/api/ranking")}`);
+  console.log(`[API] Solicitando datos de: /api/ranking`);
 
   try {
     const response = await fetchApi("/api/ranking", {
@@ -45,7 +71,7 @@ export const getBackendData = async () => {
  * Función para hacer POST al backend
  */
 export const postToBackend = async (data) => {
-  console.log(`[API] Enviando POST a: ${buildApiUrl("/api/game")}`, data);
+  console.log(`[API] Enviando POST a: /api/game`, data);
   
   try {
     const response = await fetchApi("/api/game", {

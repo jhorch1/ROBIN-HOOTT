@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { registrarUsuario } from "../services/api";
 import FormInput from "../components/ui/FormInput";
 import MyButton from "../components/ui/MyButton";
@@ -56,8 +57,10 @@ export default function RegisterPage() {
   const onSubmit = async (data) => {
     try {
       await registrarUsuario(data.nombre, data.email, data.password);
+      toast.success("¡Registro exitoso!");
       setModalOpen(true);
     } catch (err) {
+      toast.error(err.message || "Error al registrarse");
       setError("root", {
         message: err.message || "Error al registrarse",
       });

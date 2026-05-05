@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
 import FormInput from "../components/ui/FormInput";
 import MyButton from "../components/ui/MyButton";
@@ -39,8 +40,10 @@ export default function LoginPage() {
   const onSubmit = async (data) => {
     try {
       await login(data.email, data.password);
+      toast.success("¡Bienvenido de vuelta!");
       navigate("/dashboard");
     } catch (err) {
+      toast.error(err.message || "Credenciales incorrectas");
       setError("root", {
         message: err.message || "Credenciales incorrectas",
       });

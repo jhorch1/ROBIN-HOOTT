@@ -4,6 +4,8 @@ import Answer from "./answer.model.js";
 import Result from "./result.model.js";
 
 const TIEMPO_MAX_MS = 30000; // 30 segundos máximo por pregunta
+const BASE_SCORE = 500;
+const BONUS_SCORE = 500;
 
 /**
  * Genera un PIN único de 6 dígitos numéricos (ej: 384920)
@@ -34,6 +36,81 @@ const calcularPuntos = (correcta, tiempoRespuestaMs) => {
     );
 
     return base + bonus;
+};
+
+/**
+ * Calcula el puntaje dinámico según el tiempo transcurrido en la pregunta actual.
+ * @param {Object} session
+ * @param {number} timeReceived
+ * @returns {number}
+ */
+const calculateScore = (session, timeReceived) => {
+    const startTime = session.currentQuestionStartedAt?.getTime();
+    const endTime = session.currentQuestionEndsAt?.getTime();
+
+    if (!startTime || !endTime) return 0;
+    if (timeReceived > endTime) return 0;
+
+    const durationTotal = endTime - startTime;
+    if (durationTotal <= 0) return 0;
+
+    const timeReceivedSafe = Math.min(Math.max(timeReceived, startTime), endTime);
+    const tiempoRestante = endTime - timeReceivedSafe;
+    const porcentajeRestante = Math.min(Math.max(tiempoRestante / durationTotal, 0), 1);
+    const puntaje = BASE_SCORE + BONUS_SCORE * porcentajeRestante;
+
+    return Math.round(puntaje);
+};
+
+/**
+ * Activa la pregunta actual de la sesión y guarda su ventana temporal.
+ * @param {string} sessionId
+ * @param {number} preguntaIndex
+ * @param {number} tiempoLimiteMs
+ * @returns {Promise<Session>}
+ */
+export const setCurrentQuestion = async (sessionId, preguntaId, preguntaIndex, tiempoLimiteMs) => {
+    const session = await Session.findById(sessionId);
+
+    if (!session) {
+        const err = new Error("Sesión no encontrada");
+        err.statusCode = 404;
+        throw err;
+    }
+
+    const now = new Date();
+    const endsAt = new Date(now.getTime() + tiempoLimiteMs * 1000);
+
+    session.currentQuestionIndex = preguntaIndex;
+    session.currentQuestionStartedAt = now;
+    session.currentQuestionEndsAt = endsAt;
+    session.currentQuestionId = String(preguntaId);
+    await session.save();
+
+    return session;
+};
+
+/**
+ * Limpia la pregunta activa de una sesión.
+ * @param {string} sessionId
+ * @returns {Promise<Session>}
+ */
+export const clearCurrentQuestion = async (sessionId) => {
+    const session = await Session.findById(sessionId);
+
+    if (!session) {
+        const err = new Error("Sesión no encontrada");
+        err.statusCode = 404;
+        throw err;
+    }
+
+    session.currentQuestionIndex = null;
+    session.currentQuestionId = null;
+    session.currentQuestionStartedAt = null;
+    session.currentQuestionEndsAt = null;
+    await session.save();
+
+    return session;
 };
 
 // ─── CREATE SESSION ───────────────────────────────────────────────────────────
@@ -154,6 +231,7 @@ export const submitAnswer = async ({
     opcionId,
     correcta,
     tiempoRespuestaMs,
+    timeReceived = Date.now(),
 }) => {
     if (!sessionId || !participantId || !preguntaId || !opcionId) {
         const err = new Error(
@@ -180,6 +258,17 @@ export const submitAnswer = async ({
         throw err;
     }
 
+    if (
+        !session.currentQuestionStartedAt ||
+        !session.currentQuestionEndsAt ||
+        session.currentQuestionId !== String(preguntaId) ||
+        timeReceived > session.currentQuestionEndsAt.getTime()
+    ) {
+        const err = new Error("La pregunta ya expiró");
+        err.statusCode = 400;
+        throw err;
+    }
+
     const participant = await Participant.findById(participantId);
     if (!participant) {
         const err = new Error("Participante no encontrado");
@@ -187,7 +276,9 @@ export const submitAnswer = async ({
         throw err;
     }
 
-    const puntosGanados = calcularPuntos(correcta, tiempoRespuestaMs);
+    const puntosGanados = correcta
+        ? calculateScore(session, timeReceived)
+        : 0;
 
     const answer = await Answer.create({
         participantId,

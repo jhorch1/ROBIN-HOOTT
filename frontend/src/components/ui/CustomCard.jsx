@@ -23,7 +23,7 @@ export default function CustomCard({
     backgroundColor: "var(--color-bg-card)",
     borderRadius: "var(--border-radius)",
     padding: "32px",
-    border: "1px solid #e0e0e0",
+    border: "1px solid var(--color-border)",
     boxShadow: "var(--shadow-md), var(--shadow-tactile)",
     transition: "transform 0.2s, box-shadow 0.2s",
     display: "flex",
@@ -41,7 +41,7 @@ export default function CustomCard({
 
   const iconStyle = {
     fontSize: "1.5rem",
-    backgroundColor: "rgba(0,0,0,0.05)",
+    backgroundColor: "var(--color-icon-bg)",
     width: "48px",
     height: "48px",
     display: "flex",

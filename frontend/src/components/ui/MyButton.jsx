@@ -39,10 +39,10 @@ export default function MyButton({
       boxShadow: "0 4px 0 #113f15",
     },
     secondary: {
-      backgroundColor: "#ffffff",
-      color: "var(--color-primary)",
-      boxShadow: "0 4px 0 #cccccc",
-      border: "2px solid #eeeeee",
+      backgroundColor: "var(--color-bg-card)",
+      color: "var(--color-text)",
+      boxShadow: "0 4px 0 var(--color-border)",
+      border: "2px solid var(--color-border)",
     },
     danger: {
       backgroundColor: "var(--color-kahoot-red)",

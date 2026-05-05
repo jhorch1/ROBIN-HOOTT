@@ -31,7 +31,7 @@ export default function Modal({ isOpen, onClose, title, children }) {
           &times;
         </button>
         {title && (
-          <h2 style={{ color: "#00838f", marginBottom: "16px", fontSize: "1.4rem" }}>
+          <h2 style={{ color: "var(--color-primary)", marginBottom: "16px", fontSize: "1.4rem" }}>
             {title}
           </h2>
         )}

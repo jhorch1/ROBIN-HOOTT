@@ -15,7 +15,7 @@ const FormInput = forwardRef(function FormInput(
   };
 
   const labelStyle = {
-    color: "#37474f",
+    color: "var(--color-text)",
     fontSize: "0.9rem",
     fontWeight: "600",
   };
@@ -23,9 +23,9 @@ const FormInput = forwardRef(function FormInput(
   const inputStyle = {
     padding: "12px 14px",
     borderRadius: "6px",
-    border: error ? "1px solid #d32f2f" : "1px solid #cfd8dc",
-    backgroundColor: "#ffffff",
-    color: "#263238",
+    border: error ? "1px solid #d32f2f" : "1px solid var(--color-border)",
+    backgroundColor: "var(--color-bg-card)",
+    color: "var(--color-text)",
     fontSize: "0.95rem",
     outline: "none",
     transition: "border-color 0.3s",

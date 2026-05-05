@@ -10,7 +10,7 @@ const options = {
         "API REST para Robin HOOT — plataforma de quizzes interactivos en tiempo real. Autenticación con JWT via cookie HTTP-only.",
     },
     servers: [
-      { url: "http://localhost:5000", description: "Servidor de desarrollo" },
+      { url: "http://localhost:5001", description: "Servidor de desarrollo" },
     ],
     components: {
       securitySchemes: {
@@ -18,7 +18,17 @@ const options = {
           type: "apiKey",
           in: "cookie",
           name: "token",
-          description: "Token JWT almacenado en cookie HTTP-only. Se setea automáticamente al hacer login.",
+          description:
+            "Token JWT en cookie HTTP-only. Se setea automáticamente al hacer login. " +
+            "⚠️ Los navegadores no pueden enviar cookies HTTP-only desde Swagger UI — usa bearerAuth para probar endpoints protegidos.",
+        },
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+          description:
+            "Token JWT en el header Authorization: Bearer <token>. " +
+            "Haz login primero, copia el token de la respuesta, luego haz clic en 'Authorize' e ingrésalo aquí.",
         },
       },
       schemas: {
@@ -41,6 +51,40 @@ const options = {
             fechaCreacion: { type: "string", format: "date-time" },
           },
         },
+        Juego: {
+          type: "object",
+          properties: {
+            _id: { type: "string", example: "664f1b2c3d4e5f6a7b8c9d12" },
+            titulo: { type: "string", example: "Quiz de Matemáticas" },
+            descripcion: { type: "string", example: "Juego de preguntas sobre álgebra" },
+            creadorId: { type: "string", example: "664f1b2c3d4e5f6a7b8c9d0e" },
+            estado: { type: "string", enum: ["BORRADOR", "PUBLICADO"], example: "BORRADOR" },
+            fechaCreacion: { type: "string", format: "date-time" },
+          },
+        },
+        Pregunta: {
+          type: "object",
+          properties: {
+            _id: { type: "string", example: "664f1b2c3d4e5f6a7b8c9d13" },
+            enunciado: { type: "string", example: "¿Cuánto es 2 + 2?" },
+            tipo: { type: "string", enum: ["multiple", "verdadero/falso"], example: "multiple" },
+            tiempoLimite: { type: "number", example: 20 },
+            juegoId: { type: "string", example: "664f1b2c3d4e5f6a7b8c9d12" },
+            createdAt: { type: "string", format: "date-time" },
+            updatedAt: { type: "string", format: "date-time" },
+          },
+        },
+        OpcionRespuesta: {
+          type: "object",
+          properties: {
+            _id: { type: "string", example: "664f1b2c3d4e5f6a7b8c9d14" },
+            texto: { type: "string", example: "4" },
+            esCorrecta: { type: "boolean", example: true },
+            preguntaId: { type: "string", example: "664f1b2c3d4e5f6a7b8c9d13" },
+            createdAt: { type: "string", format: "date-time" },
+            updatedAt: { type: "string", format: "date-time" },
+          },
+        },
         Producto: {
           type: "object",
           properties: {
@@ -61,7 +105,7 @@ const options = {
       },
     },
   },
-  apis: ["./src/routes/*.js"],
+  apis: ["./src/routes/*.js", "./src/modules/sessions/session.routes.js"],
 };
 
 const swaggerSpec = swaggerJsdoc(options);

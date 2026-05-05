@@ -28,6 +28,23 @@ const sessionSchema = new mongoose.Schema(
             type: Date,
             default: null,
         },
+        currentQuestionIndex: {
+            type: Number,
+            default: null,
+        },
+        currentQuestionId: {
+            type: String,
+            default: null,
+            trim: true,
+        },
+        currentQuestionStartedAt: {
+            type: Date,
+            default: null,
+        },
+        currentQuestionEndsAt: {
+            type: Date,
+            default: null,
+        },
         finishedAt: {
             type: Date,
             default: null,

@@ -4,7 +4,8 @@ import * as sessionService from "./session.service.js";
 export const createSession = async (req, res, next) => {
     try {
         const { juegoId, creadorId } = req.body;
-        const session = await sessionService.createSession(juegoId, creadorId);
+        const creadorSeguro = req.userId || creadorId;
+        const session = await sessionService.createSession(juegoId, creadorSeguro);
         res.status(201).json({
             success: true,
             message: "Sesión creada exitosamente",
@@ -25,7 +26,8 @@ export const createSession = async (req, res, next) => {
 export const iniciarPartida = async (req, res, next) => {
     try {
         const { juegoId, creadorId } = req.body;
-        const session = await sessionService.iniciarPartida(juegoId, creadorId);
+        const creadorSeguro = req.userId || creadorId;
+        const session = await sessionService.iniciarPartida(juegoId, creadorSeguro);
         res.status(201).json({
             success: true,
             message: "Partida creada. PIN generado.",

@@ -3,6 +3,25 @@ import Rol from "../models/Rol.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+const mapearUsuarioSeguro = (usuario) => {
+  if (!usuario) {
+    return null;
+  }
+
+  const rol = usuario.rolId?.nombre || null;
+
+  return {
+    id: usuario._id,
+    nombre: usuario.nombre,
+    email: usuario.email,
+    rol,
+    rolId: usuario.rolId?._id || usuario.rolId || null,
+    fechaRegistro: usuario.fechaRegistro,
+    createdAt: usuario.createdAt,
+    updatedAt: usuario.updatedAt,
+  };
+};
+
 // Registrar usuario (para registro público)
 export const registrar = async (req, res) => {
   try {
@@ -37,9 +56,11 @@ export const registrar = async (req, res) => {
 
     await usuario.save();
 
+    const usuarioCreado = await Usuario.findById(usuario._id).populate("rolId", "nombre");
+
     res.status(201).json({ 
       message: "Usuario registrado exitosamente",
-      usuario: { id: usuario._id, nombre: usuario.nombre, email: usuario.email }
+      usuario: mapearUsuarioSeguro(usuarioCreado),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -65,8 +86,10 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Credenciales inválidas" });
     }
 
+    const rol = await Rol.findById(usuario.rolId);
+
     const token = jwt.sign(
-      { id: usuario._id },
+      { id: usuario._id, rol: rol?.nombre || null },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
@@ -81,21 +104,39 @@ export const login = async (req, res) => {
 
     res.json({ 
       message: "Login exitoso",
-      usuario: { id: usuario._id, nombre: usuario.nombre, email: usuario.email }
+      token,
+      usuario: {
+        id: usuario._id,
+        nombre: usuario.nombre,
+        email: usuario.email,
+        rol: rol?.nombre || null,
+      },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+// Logout
+export const logout = (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+  });
+  res.json({ message: "Sesión cerrada correctamente" });
+};
+
 // Perfil
 export const perfil = async (req, res) => {
   try {
-    const usuario = await Usuario.findById(req.userId).select("-contraseña");
+    const usuario = await Usuario.findById(req.userId)
+      .select("-contraseña")
+      .populate("rolId", "nombre");
     if (!usuario) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
-    res.json(usuario);
+    res.json(mapearUsuarioSeguro(usuario));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -104,8 +145,10 @@ export const perfil = async (req, res) => {
 // Obtener todos los usuarios
 export const obtenerUsuarios = async (req, res) => {
   try {
-    const usuarios = await Usuario.find().populate("rolId", "nombre");
-    res.json(usuarios);
+    const usuarios = await Usuario.find()
+      .select("-contraseña")
+      .populate("rolId", "nombre");
+    res.json(usuarios.map(mapearUsuarioSeguro));
   } catch (error) {
     res.status(500).json({ mensaje: error.message });
   }
@@ -114,11 +157,13 @@ export const obtenerUsuarios = async (req, res) => {
 // Obtener usuario por ID
 export const obtenerUsuarioPorId = async (req, res) => {
   try {
-    const usuario = await Usuario.findById(req.params.id).populate("rolId", "nombre");
+    const usuario = await Usuario.findById(req.params.id)
+      .select("-contraseña")
+      .populate("rolId", "nombre");
     if (!usuario) {
       return res.status(404).json({ mensaje: "Usuario no encontrado" });
     }
-    res.json(usuario);
+    res.json(mapearUsuarioSeguro(usuario));
   } catch (error) {
     res.status(500).json({ mensaje: error.message });
   }
@@ -159,9 +204,11 @@ export const crearUsuario = async (req, res) => {
     });
 
     const usuarioGuardado = await nuevoUsuario.save();
-    const usuarioPopulado = await usuarioGuardado.populate("rolId", "nombre");
+    const usuarioPopulado = await Usuario.findById(usuarioGuardado._id)
+      .select("-contraseña")
+      .populate("rolId", "nombre");
 
-    res.status(201).json(usuarioPopulado);
+    res.status(201).json(mapearUsuarioSeguro(usuarioPopulado));
   } catch (error) {
     res.status(500).json({ mensaje: error.message });
   }
@@ -171,6 +218,30 @@ export const crearUsuario = async (req, res) => {
 export const actualizarUsuario = async (req, res) => {
   try {
     const { nombre, email, rolId } = req.body;
+    const esAdmin = req.userRol === "ADMIN";
+
+    const datosActualizar = {};
+
+    if (nombre !== undefined) {
+      datosActualizar.nombre = nombre;
+    }
+
+    if (email !== undefined) {
+      datosActualizar.email = email;
+    }
+
+    if (rolId !== undefined) {
+      if (!esAdmin) {
+        return res.status(403).json({ success: false, message: "Sin permiso" });
+      }
+
+      const rol = await Rol.findById(rolId);
+      if (!rol) {
+        return res.status(404).json({ mensaje: "El rol no existe" });
+      }
+
+      datosActualizar.rolId = rolId;
+    }
 
     // Si se actualiza email, verificar que no exista
     if (email) {
@@ -183,26 +254,19 @@ export const actualizarUsuario = async (req, res) => {
       }
     }
 
-    // Si se actualiza rol, verificar que exista
-    if (rolId) {
-      const rol = await Rol.findById(rolId);
-      if (!rol) {
-        return res.status(404).json({ mensaje: "El rol no existe" });
-      }
-    }
-
-    const datosActualizar = { nombre, email, rolId };
     const usuarioActualizado = await Usuario.findByIdAndUpdate(
       req.params.id,
       datosActualizar,
       { new: true, runValidators: true }
-    ).populate("rolId", "nombre");
+    )
+      .select("-contraseña")
+      .populate("rolId", "nombre");
 
     if (!usuarioActualizado) {
       return res.status(404).json({ mensaje: "Usuario no encontrado" });
     }
 
-    res.json(usuarioActualizado);
+    res.json(mapearUsuarioSeguro(usuarioActualizado));
   } catch (error) {
     res.status(500).json({ mensaje: error.message });
   }
@@ -212,9 +276,15 @@ export const actualizarUsuario = async (req, res) => {
 export const cambiarContraseña = async (req, res) => {
   try {
     const { contraseñaActual, contraseñaNueva } = req.body;
+    const esAdmin = req.userRol === "ADMIN";
+    const esMismoUsuario = req.userId === req.params.id;
 
-    if (!contraseñaActual || !contraseñaNueva) {
-      return res.status(400).json({ mensaje: "Las contraseñas son requeridas" });
+    if (!contraseñaNueva) {
+      return res.status(400).json({ mensaje: "La contraseña nueva es requerida" });
+    }
+
+    if (esMismoUsuario && !contraseñaActual) {
+      return res.status(400).json({ mensaje: "La contraseña actual es requerida" });
     }
 
     const usuario = await Usuario.findById(req.params.id);
@@ -222,16 +292,16 @@ export const cambiarContraseña = async (req, res) => {
       return res.status(404).json({ mensaje: "Usuario no encontrado" });
     }
 
-    // Verificar contraseña actual
-    const contraseñaValida = await bcrypt.compare(
-      contraseñaActual,
-      usuario.contraseña
-    );
-    if (!contraseñaValida) {
-      return res.status(400).json({ mensaje: "Contraseña actual incorrecta" });
+    if (!esAdmin || esMismoUsuario) {
+      const contraseñaValida = await bcrypt.compare(
+        contraseñaActual,
+        usuario.contraseña
+      );
+      if (!contraseñaValida) {
+        return res.status(400).json({ mensaje: "Contraseña actual incorrecta" });
+      }
     }
 
-    // Encriptar nueva contraseña
     const salt = await bcrypt.genSalt(10);
     const nuevaContraseña = await bcrypt.hash(contraseñaNueva, salt);
 

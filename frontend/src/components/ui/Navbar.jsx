@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import MyButton from "./MyButton";
-import { Target, User, LayoutDashboard, LogOut, LogIn, Moon, Sun } from "lucide-react";
+import { Target, User, LayoutDashboard, LogOut, LogIn, Moon, Sun, BookOpen, PlayCircle, ListChecks } from "lucide-react";
 import { useState, useEffect } from "react";
 
 /**
@@ -68,13 +68,33 @@ export default function Navbar() {
 
         {usuario ? (
           <>
-            <div className="navbar-user">
+            <button
+              type="button"
+              onClick={() => navigate("/profile")}
+              className="navbar-user"
+              style={{ cursor: "pointer" }}
+            >
               <User size={20} style={{ color: "var(--color-primary)" }} />
               <span>{usuario.nombre}</span>
-            </div>
+            </button>
             <Link to="/dashboard">
               <MyButton variant="primary" style={{ borderRadius: "14px" }}>
                 <LayoutDashboard size={18} style={{ marginRight: "8px" }} /> PANEL
+              </MyButton>
+            </Link>
+            <Link to="/join">
+              <MyButton variant="secondary" style={{ borderRadius: "14px" }}>
+                <PlayCircle size={18} style={{ marginRight: "8px" }} /> UNIRME
+              </MyButton>
+            </Link>
+            <Link to="/library">
+              <MyButton variant="secondary" style={{ borderRadius: "14px" }}>
+                <BookOpen size={18} style={{ marginRight: "8px" }} /> LIBRERÍA
+              </MyButton>
+            </Link>
+            <Link to="/sessions">
+              <MyButton variant="secondary" style={{ borderRadius: "14px" }}>
+                <ListChecks size={18} style={{ marginRight: "8px" }} /> SESIONES
               </MyButton>
             </Link>
             <MyButton

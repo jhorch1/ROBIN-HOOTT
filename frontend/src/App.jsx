@@ -6,6 +6,11 @@ import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import Dashboard from "./pages/Dashboard";
+import JoinPage from "./pages/JoinPage";
+import LibraryPage from "./pages/LibraryPage";
+import QuizCreatePage from "./pages/QuizCreatePage";
+import SessionsPage from "./pages/SessionsPage";
+import ProfilePage from "./pages/ProfilePage";
 import Spinner from "./components/ui/Spinner";
 import { useEffect } from "react";
 import "./App.css";
@@ -41,6 +46,46 @@ export default function App() {
             element={
               <RutaProtegida>
                 <Dashboard />
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/join"
+            element={
+              <RutaProtegida>
+                <JoinPage />
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/library"
+            element={
+              <RutaProtegida>
+                <LibraryPage />
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/quiz/create"
+            element={
+              <RutaProtegida>
+                <QuizCreatePage />
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/sessions"
+            element={
+              <RutaProtegida>
+                <SessionsPage />
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <RutaProtegida>
+                <ProfilePage />
               </RutaProtegida>
             }
           />

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import MyButton from "../components/ui/MyButton";
 import CustomCard from "../components/ui/CustomCard";
@@ -12,7 +12,14 @@ import landingBackground from "../assets/backgrounds/ITP-3.jpeg";
  */
 export default function LandingPage() {
   const { usuario } = useAuth();
+  const navigate = useNavigate();
   const [showDemo, setShowDemo] = useState(false);
+
+  useEffect(() => {
+    if (usuario) {
+      navigate("/dashboard");
+    }
+  }, [usuario, navigate]);
 
   return (
     <div

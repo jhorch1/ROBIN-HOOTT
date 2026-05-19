@@ -88,6 +88,10 @@ export const login = async (req, res) => {
 
     const rol = await Rol.findById(usuario.rolId);
 
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ message: "JWT_SECRET no está configurado en el servidor" });
+    }
+
     const token = jwt.sign(
       { id: usuario._id, rol: rol?.nombre || null },
       process.env.JWT_SECRET,

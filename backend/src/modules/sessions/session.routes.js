@@ -7,6 +7,7 @@
 
 import { Router } from "express";
 import {
+    listarSesiones,
     createSession,
     iniciarPartida,
     startSession,
@@ -45,6 +46,7 @@ const router = Router();
  *       401:
  *         description: No autenticado
  */
+router.get("/", verificarToken, listarSesiones);
 router.post("/", verificarToken, autorizarRoles("ADMIN", "DOCENTE"), createSession);
 
 /**

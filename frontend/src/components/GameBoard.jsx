@@ -60,12 +60,6 @@ export default function GameBoard({ prefillPin, autoJoin }) {
   }, [prefillPin]);
 
   const ejecutarUnirse = async (p, n) => {
-    try {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      }
-    } catch (e) {}
-
     setLoading(true);
     setError(null);
     try {
@@ -74,6 +68,9 @@ export default function GameBoard({ prefillPin, autoJoin }) {
       setSesion({ sessionId, participantId, juegoId });
 
       if (estado === "ACTIVA") {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
         setIniciada(true);
         await cargarPreguntasJuego(juegoId);
       }
@@ -200,6 +197,30 @@ export default function GameBoard({ prefillPin, autoJoin }) {
       socket.off("game_finished", onGameFinished);
     };
   }, [sesion]);
+
+  useEffect(() => {
+    if (!sesion || !iniciada) return;
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== "visible") {
+        setError("Has salido de la pestaña de juego. El docente será notificado.");
+      }
+    };
+
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        setError("Salir de pantalla completa durante el quiz puede penalizar tu sesión.");
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, [sesion, iniciada]);
 
   const handleResponder = (opcion) => {
     if (respondida || respuestaPendiente) return;

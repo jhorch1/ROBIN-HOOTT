@@ -390,6 +390,26 @@ export const guardarResultadoMaraton = async ({ puntaje, aciertos, totalPregunta
   }
 };
 
+export const obtenerSesiones = async () => {
+  try {
+    const response = await fetchApi("/api/sessions", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!response.ok) {
+      const message = await parseErrorMessage(response, `Error al obtener sesiones (HTTP ${response.status})`);
+      throw new Error(message);
+    }
+
+    const data = await response.json();
+    return data.data || [];
+  } catch (error) {
+    console.error("[API] Error obteniendo sesiones:", error);
+    throw error;
+  }
+};
+
 /**
  * Obtener ranking global de maratón
  */

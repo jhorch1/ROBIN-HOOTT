@@ -1,5 +1,16 @@
 import * as sessionService from "./session.service.js";
 
+// GET /api/sessions
+export const listarSesiones = async (req, res, next) => {
+    try {
+        const creadorId = req.userId || null;
+        const sesiones = await sessionService.listSessions(creadorId);
+        res.status(200).json({ success: true, data: sesiones });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // POST /api/sessions
 export const createSession = async (req, res, next) => {
     try {

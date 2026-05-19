@@ -14,7 +14,8 @@ RUN npm ci --omit=dev
 COPY . .
 
 # Exponer puerto de la aplicación
-EXPOSE 5000
+EXPOSE 5001
+ENV PORT=5001
 
 # Comando para arrancar
 CMD ["node", "server.js"]

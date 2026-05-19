@@ -2,6 +2,7 @@ import Session from "./session.model.js";
 import Participant from "./participant.model.js";
 import Answer from "./answer.model.js";
 import Result from "./result.model.js";
+import Juego from "../../models/Juego.js";
 
 const TIEMPO_MAX_MS = 30000; // 30 segundos máximo por pregunta
 const BASE_SCORE = 500;
@@ -318,6 +319,43 @@ export const getRanking = async (sessionId) => {
         puntaje: p.puntaje,
         conectado: p.conectado,
     }));
+};
+
+export const listSessions = async (creadorId = null) => {
+    const filter = creadorId ? { creadorId } : {};
+    const sessions = await Session.find(filter).sort({ createdAt: -1 });
+
+    return Promise.all(
+        sessions.map(async (session) => {
+            const juego = await Juego.findById(session.juegoId).select("titulo");
+            const participantes = await Participant.find({ sessionId: session._id }).sort({ puntaje: -1 });
+            const totalParticipantes = participantes.length;
+            const totalPuntaje = participantes.reduce((sum, p) => sum + p.puntaje, 0);
+            const promedioPuntaje = totalParticipantes > 0 ? Math.round(totalPuntaje / totalParticipantes) : 0;
+
+            return {
+                sessionId: session._id,
+                pin: session.pin,
+                estado: session.estado,
+                juegoId: session.juegoId,
+                juegoTitulo: juego?.titulo || "Juego sin título",
+                creadorId: session.creadorId,
+                createdAt: session.createdAt,
+                startedAt: session.startedAt,
+                finishedAt: session.finishedAt,
+                totalParticipantes,
+                promedioPuntaje,
+                puntajeMaximo: participantes[0]?.puntaje || 0,
+                participantes: participantes.map((participant, index) => ({
+                    posicion: index + 1,
+                    usuarioId: participant.usuarioId,
+                    nombre: participant.nombre,
+                    puntaje: participant.puntaje,
+                    conectado: participant.conectado,
+                })),
+            };
+        })
+    );
 };
 
 // ─── END SESSION ──────────────────────────────────────────────────────────────

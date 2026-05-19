@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swagger.js";
 
@@ -14,6 +15,7 @@ import sessionRoutes from "./modules/sessions/session.routes.js";
 import preguntaRoutes from "./routes/preguntaRoutes.js";
 import opcionRespuestaRoutes from "./routes/opcionRespuestaRoutes.js";
 import juegoRoutes from "./routes/juegoRoutes.js";
+import triviaRoutes from "./routes/triviaRoutes.js";
 import rankingRoutes from "./routes/rankingRoutes.js";
 import maratonRoutes from "./routes/maratonRoutes.js";
 import rolRoutes from "./routes/rolRoutes.js";
@@ -60,6 +62,7 @@ app.use(
 // ── Parseo de JSON y cookies ──────────────────────────────────────────────────
 app.use(express.json());
 app.use(cookieParser());
+app.use(morgan("dev"));
 
 // ── Swagger UI ───────────────────────────────────────────────────────────────
 const swaggerUiOptions = {
@@ -104,6 +107,7 @@ app.use("/api/sessions", sessionRoutes);
 app.use("/api/preguntas", preguntaRoutes);
 app.use("/api/opciones", opcionRespuestaRoutes);
 app.use("/api/juegos", juegoRoutes);
+app.use("/trivia", triviaRoutes);
 app.use("/api/ranking", rankingRoutes);
 app.use("/api/maraton", maratonRoutes);
 app.use("/api/roles", rolRoutes);

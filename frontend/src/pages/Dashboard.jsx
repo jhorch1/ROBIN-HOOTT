@@ -21,6 +21,7 @@ import dashboardBackground from "../assets/backgrounds/ITP.2.jpeg";
 export default function Dashboard() {
   const { usuario, cerrarSesion } = useAuth();
   const navigate = useNavigate();
+  const isDocente = usuario?.rol === "DOCENTE" || usuario?.rol === "ADMIN";
   const [ranking, setRanking] = useState([]);
   const [rankingMaraton, setRankingMaraton] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -217,6 +218,7 @@ export default function Dashboard() {
           <div style={{ display: "flex", flexDirection: "column", gap: "15px", marginTop: "20px" }}>
             <p style={{ fontSize: "1.1rem" }}><strong>Nombre:</strong> {usuario?.nombre}</p>
             <p style={{ fontSize: "1.1rem" }}><strong>Email:</strong> {usuario?.email}</p>
+            <p style={{ fontSize: "1.1rem" }}><strong>Rol:</strong> {usuario?.rol || "Estudiante"}</p>
             <p><small style={{ opacity: 0.6, fontSize: "0.9rem" }}>ID: {usuario?._id || "UP-USER"}</small></p>
             <MyButton variant="secondary" onClick={handleOpenEditProfile} style={{ marginTop: "15px", padding: "12px" }}>
               <Settings size={20} style={{ marginRight: "10px" }} /> Editar Perfil
@@ -228,17 +230,18 @@ export default function Dashboard() {
         <div className="section-join">
           <GameBoard prefillPin={prefillPin} autoJoin={!!prefillPin} />
         </div>
-        
-        {/* Crear Partida (docente) - Red */}
-        <div className="section-create">
-          <CrearSesion />
-        </div>
+        {isDocente && (
+          <div className="section-create">
+            <CrearSesion />
+          </div>
+        )}
       </div>
 
-      {/* Sección secundaria - ImportarTrivia - Blue */}
-      <div className="section-import" style={{ marginBottom: "50px" }}>
-        <ImportarTrivia />
-      </div>
+      {isDocente && (
+        <div className="section-import" style={{ marginBottom: "50px" }}>
+          <ImportarTrivia />
+        </div>
+      )}
 
       <h2 className="dashboard-section-title">
         <Rocket size={40} className="title-icon" /> Panel de Desafios
@@ -318,13 +321,6 @@ export default function Dashboard() {
             </div>
           </div>
         </CustomCard>
-      </div>
-
-      {/* Logout */}
-      <div className="dashboard-logout">
-        <MyButton variant="danger" onClick={handleLogout} style={{ padding: "16px 50px", fontSize: "1.1rem" }}>
-          <LogOut size={22} style={{ marginRight: "10px" }} /> CERRAR SESION
-        </MyButton>
       </div>
       </div>
 

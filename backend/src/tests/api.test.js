@@ -12,7 +12,7 @@
 import request from "supertest";
 import app from "../app.js";
 
-// ── Test 1: Health check ──────────────────────────────────────────────────────
+// ── Test 1: Root ──────────────────────────────────────────────────────────────
 describe("GET /", () => {
   it("debe retornar 200 y confirmar que la API está activa", async () => {
     const res = await request(app).get("/");
@@ -21,12 +21,23 @@ describe("GET /", () => {
   });
 });
 
-// ── Test 2: Login — validación de campos requeridos ───────────────────────────
+// ── Test 2: Health check dedicado ────────────────────────────────────────────
+describe("GET /health", () => {
+  it("debe retornar 200 con status, uptime y timestamp", async () => {
+    const res = await request(app).get("/health");
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty("status", "ok");
+    expect(res.body).toHaveProperty("uptime");
+    expect(res.body).toHaveProperty("timestamp");
+  });
+});
+
+// ── Test 3: Login — validación de campos requeridos ───────────────────────────
 describe("POST /api/usuarios/auth/login", () => {
   it("debe retornar 400 cuando faltan email y password", async () => {
     const res = await request(app)
       .post("/api/usuarios/auth/login")
-      .send({}) // sin body
+      .send({})
       .set("Content-Type", "application/json");
     expect(res.statusCode).toBe(400);
     expect(res.body).toHaveProperty("message");
@@ -42,7 +53,7 @@ describe("POST /api/usuarios/auth/login", () => {
   });
 });
 
-// ── Test 3: Rutas protegidas sin autenticación ────────────────────────────────
+// ── Test 4: Rutas protegidas sin autenticación ────────────────────────────────
 describe("GET /api/usuarios/perfil (protegido)", () => {
   it("debe retornar 401 si no hay cookie de token", async () => {
     const res = await request(app).get("/api/usuarios/perfil");
@@ -50,7 +61,7 @@ describe("GET /api/usuarios/perfil (protegido)", () => {
   });
 });
 
-// ── Test 4: Ranking protegido (Tarea de Niyerieth) ─────────────────────────────
+// ── Test 5: Ranking protegido ─────────────────────────────────────────────────
 describe("GET /api/ranking (protegido)", () => {
   it("debe retornar 401 si no hay autenticación", async () => {
     const res = await request(app).get("/api/ranking");
@@ -58,7 +69,7 @@ describe("GET /api/ranking (protegido)", () => {
   });
 });
 
-// ── Test 4: Ruta inexistente ──────────────────────────────────────────────────
+// ── Test 6: Ruta inexistente ──────────────────────────────────────────────────
 describe("GET /ruta-que-no-existe", () => {
   it("debe retornar 404", async () => {
     const res = await request(app).get("/ruta-que-no-existe");
@@ -66,7 +77,7 @@ describe("GET /ruta-que-no-existe", () => {
   });
 });
 
-// ── Test 5: Crear juego sin token → 401 ───────────────────────────────────────
+// ── Test 7: Crear juego sin token → 401 ───────────────────────────────────────
 describe("POST /api/juegos (protegido)", () => {
   it("debe retornar 401 si no hay token", async () => {
     const res = await request(app)
@@ -77,7 +88,7 @@ describe("POST /api/juegos (protegido)", () => {
   });
 });
 
-// ── Test 6: Crear pregunta sin token → 401 ────────────────────────────────────
+// ── Test 8: Crear pregunta sin token → 401 ────────────────────────────────────
 describe("POST /api/preguntas (protegido)", () => {
   it("debe retornar 401 si no hay token", async () => {
     const res = await request(app)
@@ -88,7 +99,7 @@ describe("POST /api/preguntas (protegido)", () => {
   });
 });
 
-// ── Test 7: Unirse a sesión sin body → 400 ────────────────────────────────────
+// ── Test 9: Unirse a sesión sin body → 400 ────────────────────────────────────
 describe("POST /api/sessions/join", () => {
   it("debe retornar 400 si faltan pin o nickname", async () => {
     const res = await request(app)
@@ -99,7 +110,7 @@ describe("POST /api/sessions/join", () => {
   });
 });
 
-// ── Test 8: Crear sesión sin token → 401 ─────────────────────────────────────
+// ── Test 10: Crear sesión sin token → 401 ─────────────────────────────────────
 describe("POST /api/sessions/start (protegido)", () => {
   it("debe retornar 401 si no hay token", async () => {
     const res = await request(app)

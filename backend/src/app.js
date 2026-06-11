@@ -58,11 +58,20 @@ app.use(
   })
 );
 
-
 // ── Parseo de JSON y cookies ──────────────────────────────────────────────────
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
+
+// ── Health check dedicado (debe ir ANTES de middlewares de seguridad) ─────────
+// Usado por UptimeRobot cada 5 min para evitar que el servidor duerma
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+  });
+});
 
 // ── Swagger UI ───────────────────────────────────────────────────────────────
 const swaggerUiOptions = {
@@ -92,7 +101,7 @@ const swaggerUiOptions = {
 };
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
-// ── Health check ──────────────────────────────────────────────────────────────
+// ── Root ──────────────────────────────────────────────────────────────────────
 app.get("/", (req, res) => {
   res.json({ message: "RobinHoot API funcionando", version: "1.0.0", docs: "/api-docs" });
 });

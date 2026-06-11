@@ -4,12 +4,26 @@ services:
     container_name: robinhoot-backend
     ports:
       - "5001:5001"
+    env_file:
+      - ./backend/.env
     environment:
-      - MONGO_URI=${MONGO_URI}
       - PORT=5001
       - NODE_ENV=production
     depends_on:
       - mongo
+    restart: unless-stopped
+    networks:
+      - robinhoot-net
+
+  frontend:
+    build: ./frontend
+    container_name: robinhoot-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://backend:5001
+    depends_on:
+      - backend
     restart: unless-stopped
     networks:
       - robinhoot-net
@@ -19,6 +33,9 @@ services:
     container_name: robinhoot-mongo
     ports:
       - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     volumes:
       - mongo-data:/data/db
     networks:
@@ -27,7 +44,6 @@ services:
 
 volumes:
   mongo-data:
-
 
 networks:
   robinhoot-net:

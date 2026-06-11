@@ -9,10 +9,34 @@
     "seed": "node seeders.js",
     "lint": "eslint src/ server.js seeders.js",
     "lint:fix": "eslint src/ server.js seeders.js --fix",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPatterns=src/tests"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPatterns=src/tests",
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPatterns=src/tests --coverage"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coverageThreshold": {
+      "global": {
+        "lines": 89,
+        "functions": 90,
+        "branches": 60
+      }
+    },
+    "collectCoverageFrom": [
+      "src/middlewares/errorHandler.js",
+      "src/middlewares/auth.js",
+      "src/controllers/juegoController.js",
+      "src/controllers/categoriaController.js",
+      "src/controllers/preguntaController.js",
+      "src/routes/juegoRoutes.js",
+      "src/routes/categoriaRoutes.js",
+      "src/routes/preguntaRoutes.js",
+      "src/routes/usuarioRoutes.js",
+      "src/routes/rolRoutes.js",
+      "src/routes/opcionRespuestaRoutes.js",
+      "src/routes/productoRoutes.js",
+      "src/routes/triviaRoutes.js",
+      "src/modules/sessions/session.routes.js"
+    ]
   },
   "keywords": [],
   "author": "",
@@ -36,6 +60,7 @@
     "eslint": "^9.28.0",
     "globals": "^16.2.0",
     "jest": "^30.3.0",
+    "mongodb-memory-server": "^10.1.4",
     "nodemon": "^3.1.14",
     "supertest": "^7.2.2"
   }

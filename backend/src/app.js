@@ -25,8 +25,9 @@ import errorHandler from "./middlewares/errorHandler.js";
 
 const app = express();
 
-// ── CORS: habilita peticiones desde el frontend local y Swagger UI ────────────
-const allowedOrigins = new Set([
+// ── CORS: orígenes permitidos con .filter(Boolean) ───────────────────────────
+// .filter(Boolean) purga strings vacíos o undefined que vengan de variables de entorno
+const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:4173",
   "http://localhost:5173",
@@ -39,12 +40,13 @@ const allowedOrigins = new Set([
   "http://127.0.0.1:5174",
   "http://127.0.0.1:5001",
   "http://127.0.0.1:5000",
-]);
+  process.env.FRONTEND_URL, // URL de producción Render (sin barra al final)
+].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.has(origin)) {
+      if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         callback(new Error(`CORS: origen no permitido – ${origin}`));

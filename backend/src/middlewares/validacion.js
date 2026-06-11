@@ -12,7 +12,7 @@ export const validarDatos = (campos) => {
 };
 
 // Middleware para manejo de errores
-export const manejarErrores = (err, req, res, next) => {
+export const manejarErrores = (err, req, res, _next) => {
   console.error(err);
   res.status(err.status || 500).json({
     mensaje: err.message || "Error interno del servidor",

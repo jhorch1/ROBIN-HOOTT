@@ -32,7 +32,7 @@ const allowedOrigins = new Set([
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5001",
-  "http://localhost:5000", // ← Swagger UI hace peticiones desde el propio backend
+  "http://localhost:5000",
   "http://127.0.0.1:3000",
   "http://127.0.0.1:4173",
   "http://127.0.0.1:5173",
@@ -44,17 +44,16 @@ const allowedOrigins = new Set([
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Permite llamadas sin origin (Postman, curl, Swagger) y orígenes permitidos
       if (!origin || allowedOrigins.has(origin)) {
         callback(null, true);
       } else {
         callback(new Error(`CORS: origen no permitido – ${origin}`));
       }
     },
-    credentials: true, // Necesario para enviar/recibir cookies
+    credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    optionsSuccessStatus: 200, // Algunos navegadores (IE11) fallan con 204
+    optionsSuccessStatus: 200,
   })
 );
 
@@ -76,13 +75,12 @@ app.get("/health", (req, res) => {
 // ── Swagger UI ───────────────────────────────────────────────────────────────
 const swaggerUiOptions = {
   swaggerOptions: {
-    // Persiste la autorización entre recargas de página
     persistAuthorization: true,
-    // Intercepta TODAS las respuestas de Swagger UI
+    // responseInterceptor corre en el navegador (contexto Swagger UI, no Node)
     responseInterceptor: (response) => {
-      // Si la respuesta trae un token JWT (ej: endpoint de login)
       if (response?.body?.token) {
-        // Lo inyecta automáticamente como Bearer en el botón "Authorize"
+        // window existe en el contexto del navegador de Swagger UI
+        // eslint-disable-next-line no-undef
         const ui = window.ui;
         if (ui) {
           ui.preauthorizeApiKey("bearerAuth", response.body.token);
@@ -91,7 +89,6 @@ const swaggerUiOptions = {
       return response;
     },
   },
-  // Personalización visual: muestra el botón Authorize siempre visible
   customCss: `
     .swagger-ui .auth-wrapper { display: flex; justify-content: flex-end; }
     .swagger-ui .btn.authorize { background-color: #4CAF50; border-color: #4CAF50; color: #fff; }

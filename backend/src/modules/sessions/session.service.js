@@ -4,7 +4,6 @@ import Answer from "./answer.model.js";
 import Result from "./result.model.js";
 import Juego from "../../models/Juego.js";
 
-const TIEMPO_MAX_MS = 30000; // 30 segundos máximo por pregunta
 const BASE_SCORE = 500;
 const BONUS_SCORE = 500;
 
@@ -16,7 +15,6 @@ const generatePin = async () => {
     let exists = true;
 
     while (exists) {
-        // Número entre 100000 y 999999
         pin = String(Math.floor(100000 + Math.random() * 900000));
         exists = await Session.exists({ pin });
     }
@@ -25,25 +23,7 @@ const generatePin = async () => {
 };
 
 /**
- * Calcula los puntos ganados por una respuesta
- */
-const calcularPuntos = (correcta, tiempoRespuestaMs) => {
-    if (!correcta) return 0;
-
-    const base = 1000;
-    const tiempoEfectivo = Math.min(tiempoRespuestaMs, TIEMPO_MAX_MS);
-    const bonus = Math.floor(
-        ((TIEMPO_MAX_MS - tiempoEfectivo) / TIEMPO_MAX_MS) * 500
-    );
-
-    return base + bonus;
-};
-
-/**
  * Calcula el puntaje dinámico según el tiempo transcurrido en la pregunta actual.
- * @param {Object} session
- * @param {number} timeReceived
- * @returns {number}
  */
 const calculateScore = (session, timeReceived) => {
     const startTime = session.currentQuestionStartedAt?.getTime();
@@ -63,13 +43,6 @@ const calculateScore = (session, timeReceived) => {
     return Math.round(puntaje);
 };
 
-/**
- * Activa la pregunta actual de la sesión y guarda su ventana temporal.
- * @param {string} sessionId
- * @param {number} preguntaIndex
- * @param {number} tiempoLimiteMs
- * @returns {Promise<Session>}
- */
 export const setCurrentQuestion = async (sessionId, preguntaId, preguntaIndex, tiempoLimiteMs) => {
     const session = await Session.findById(sessionId);
 
@@ -91,11 +64,6 @@ export const setCurrentQuestion = async (sessionId, preguntaId, preguntaIndex, t
     return session;
 };
 
-/**
- * Limpia la pregunta activa de una sesión.
- * @param {string} sessionId
- * @returns {Promise<Session>}
- */
 export const clearCurrentQuestion = async (sessionId) => {
     const session = await Session.findById(sessionId);
 
@@ -114,8 +82,6 @@ export const clearCurrentQuestion = async (sessionId) => {
     return session;
 };
 
-// ─── CREATE SESSION ───────────────────────────────────────────────────────────
-
 export const createSession = async (juegoId, creadorId) => {
     if (!juegoId || !creadorId) {
         const err = new Error("juegoId y creadorId son requeridos");
@@ -124,24 +90,14 @@ export const createSession = async (juegoId, creadorId) => {
     }
 
     const pin = await generatePin();
-
     const session = await Session.create({ juegoId, creadorId, pin });
     return session;
 };
 
-// ─── INICIAR PARTIDA (crea partida y devuelve PIN numérico) ───────────────────
-
-/**
- * Crea una nueva partida y genera su PIN numérico de 6 dígitos.
- * Endpoint: POST /sessions/start
- */
 export const iniciarPartida = async (juegoId, creadorId) => {
-    // Reutiliza createSession internamente
     const session = await createSession(juegoId, creadorId);
     return session;
 };
-
-// ─── START SESSION ────────────────────────────────────────────────────────────
 
 export const startSession = async (sessionId) => {
     const session = await Session.findById(sessionId);
@@ -153,9 +109,7 @@ export const startSession = async (sessionId) => {
     }
 
     if (session.estado !== "CREADA") {
-        const err = new Error(
-            `No se puede iniciar una sesión en estado: ${session.estado}`
-        );
+        const err = new Error(`No se puede iniciar una sesión en estado: ${session.estado}`);
         err.statusCode = 400;
         throw err;
     }
@@ -167,12 +121,6 @@ export const startSession = async (sessionId) => {
     return session;
 };
 
-// ─── JOIN SESSION ─────────────────────────────────────────────────────────────
-
-/**
- * Unirse a una partida con PIN numérico y nickname.
- * usuarioId es opcional: si no se envía, se genera uno automático.
- */
 export const joinSession = async (pin, nickname, usuarioId) => {
     if (!pin || !nickname) {
         const err = new Error("pin y nickname son requeridos");
@@ -180,7 +128,6 @@ export const joinSession = async (pin, nickname, usuarioId) => {
         throw err;
     }
 
-    // PIN siempre como string (numérico)
     const pinStr = String(pin).trim();
     const session = await Session.findOne({ pin: pinStr });
 
@@ -196,19 +143,11 @@ export const joinSession = async (pin, nickname, usuarioId) => {
         throw err;
     }
 
-    // Si no viene usuarioId, lo generamos como anónimo
-    const uid =
-        usuarioId ||
-        `guest_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    const uid = usuarioId || `guest_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 
-    // Verificar si el nickname ya existe en la sesión
-    const existing = await Participant.findOne({
-        sessionId: session._id,
-        nombre: nickname,
-    });
+    const existing = await Participant.findOne({ sessionId: session._id, nombre: nickname });
 
     if (existing) {
-        // Reconectar participante
         existing.conectado = true;
         await existing.save();
         return { session, participant: existing };
@@ -223,8 +162,6 @@ export const joinSession = async (pin, nickname, usuarioId) => {
     return { session, participant };
 };
 
-// ─── SUBMIT ANSWER ────────────────────────────────────────────────────────────
-
 export const submitAnswer = async ({
     sessionId,
     participantId,
@@ -235,9 +172,7 @@ export const submitAnswer = async ({
     timeReceived = Date.now(),
 }) => {
     if (!sessionId || !participantId || !preguntaId || !opcionId) {
-        const err = new Error(
-            "sessionId, participantId, preguntaId y opcionId son requeridos"
-        );
+        const err = new Error("sessionId, participantId, preguntaId y opcionId son requeridos");
         err.statusCode = 400;
         throw err;
     }
@@ -277,9 +212,7 @@ export const submitAnswer = async ({
         throw err;
     }
 
-    const puntosGanados = correcta
-        ? calculateScore(session, timeReceived)
-        : 0;
+    const puntosGanados = correcta ? calculateScore(session, timeReceived) : 0;
 
     const answer = await Answer.create({
         participantId,
@@ -291,14 +224,11 @@ export const submitAnswer = async ({
         puntosGanados,
     });
 
-    // Actualizar puntaje acumulado
     participant.puntaje += puntosGanados;
     await participant.save();
 
     return { answer, puntaje: participant.puntaje };
 };
-
-// ─── GET RANKING ──────────────────────────────────────────────────────────────
 
 export const getRanking = async (sessionId) => {
     const session = await Session.findById(sessionId);
@@ -358,8 +288,6 @@ export const listSessions = async (creadorId = null) => {
     );
 };
 
-// ─── END SESSION ──────────────────────────────────────────────────────────────
-
 export const endSession = async (sessionId) => {
     const session = await Session.findById(sessionId);
 
@@ -370,19 +298,13 @@ export const endSession = async (sessionId) => {
     }
 
     if (session.estado !== "ACTIVA") {
-        const err = new Error(
-            `No se puede finalizar una sesión en estado: ${session.estado}`
-        );
+        const err = new Error(`No se puede finalizar una sesión en estado: ${session.estado}`);
         err.statusCode = 400;
         throw err;
     }
 
-    // Obtener participantes ordenados por puntaje
-    const participants = await Participant.find({ sessionId }).sort({
-        puntaje: -1,
-    });
+    const participants = await Participant.find({ sessionId }).sort({ puntaje: -1 });
 
-    // Generar resultados con posición y resumen de respuestas
     const results = await Promise.all(
         participants.map(async (participant, index) => {
             const answers = await Answer.find({ participantId: participant._id });
@@ -405,7 +327,6 @@ export const endSession = async (sessionId) => {
         })
     );
 
-    // Actualizar estado de la sesión
     session.estado = "FINALIZADA";
     session.finishedAt = new Date();
     await session.save();

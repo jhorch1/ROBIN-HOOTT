@@ -57,7 +57,7 @@ export const verificarToken = (req, res, next) => {
         next();
       })
       .catch(() => responderNoAutenticado(res));
-  } catch (error) {
+  } catch {
     return responderNoAutenticado(res);
   }
 };

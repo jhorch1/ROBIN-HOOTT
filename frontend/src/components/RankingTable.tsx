@@ -1,9 +1,10 @@
+import React from "react";
 import { BarChart2 } from "lucide-react";
 
 /**
  * RankingTable - Tabla de posiciones con estilo UP
  */
-export default function RankingTable({ ranking = [] }) {
+export default function RankingTable({ ranking = [] }: { ranking: any[] }) {
   if (!ranking || ranking.length === 0) {
     return (
       <div style={{ padding: "40px", textAlign: "center", color: "var(--color-text-muted)" }}>
@@ -15,19 +16,19 @@ export default function RankingTable({ ranking = [] }) {
   }
 
 
-  const th = { 
+  const th: React.CSSProperties = { 
     padding: "16px", 
-    textAlign: "left", 
+    textAlign: "left" as const, 
     color: "var(--color-primary)", 
     backgroundColor: "#f5f5f5",
     borderBottom: "2px solid #eee",
     fontWeight: "900",
-    textTransform: "uppercase",
+    textTransform: "uppercase" as const,
     fontSize: "0.85rem",
     letterSpacing: "1px"
   };
   
-  const td = { 
+  const td: React.CSSProperties = { 
     padding: "16px", 
     color: "var(--color-text)", 
     borderBottom: "1px solid #eee",

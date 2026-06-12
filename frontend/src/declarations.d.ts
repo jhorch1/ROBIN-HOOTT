@@ -1,0 +1,10 @@
+declare module '../services/api';
+declare module '../../services/api';
+declare module '../socket';
+declare module '../../socket';
+declare module '../components/ui/Modal';
+declare module '../components/RankingTable';
+declare module '../components/GameBoard';
+declare module '../components/CrearSesion.jsx';
+declare module '../components/ImportarTrivia.jsx';
+declare module '../components/MaratonUpModal.jsx';

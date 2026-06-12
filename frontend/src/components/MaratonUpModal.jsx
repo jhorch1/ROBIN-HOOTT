@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Modal from "./ui/Modal";
 import MyButton from "./ui/MyButton";
-import { useAuth } from "../hooks/useAuth.jsx";
+import { useAuth } from "../hooks/useAuth";
 import { guardarResultadoMaraton } from "../services/api.js";
 import { Award, Clock3, Flame, CheckCircle2, XCircle, RotateCcw, Trophy } from "lucide-react";
 

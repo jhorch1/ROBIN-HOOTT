@@ -1,10 +1,10 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 
 /**
  * Modal - Componente modal reutilizable
  * Se cierra con el botón X o haciendo clic fuera
  */
-export default function Modal({ isOpen, onClose, title, children }) {
+export default function Modal({ isOpen, onClose, title, children }: { isOpen: boolean; onClose: () => void; title?: React.ReactNode; children: React.ReactNode }) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -18,7 +18,7 @@ export default function Modal({ isOpen, onClose, title, children }) {
 
   if (!isOpen) return null;
 
-  const handleOverlayClick = (e) => {
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       onClose();
     }

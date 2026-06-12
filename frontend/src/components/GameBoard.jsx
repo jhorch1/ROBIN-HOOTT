@@ -5,7 +5,7 @@ import {
   obtenerOpcionesPorPregunta,
 } from "../services/api.js";
 import socket from "../socket.js";
-import { useAuth } from "../hooks/useAuth.jsx";
+import { useAuth } from "../hooks/useAuth";
 import CustomCard from "./ui/CustomCard";
 import MyButton from "./ui/MyButton";
 import { Hash, AlertCircle, Users, Trophy } from "lucide-react";

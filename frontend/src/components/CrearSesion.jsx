@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../hooks/useAuth.jsx";
+import { useAuth } from "../hooks/useAuth";
 import { crearJuego, crearSesion, obtenerPreguntasDelJuego } from "../services/api.js";
 import socket from "../socket.js";
 import CustomCard from "./ui/CustomCard";

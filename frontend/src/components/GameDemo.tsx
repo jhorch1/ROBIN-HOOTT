@@ -2,23 +2,25 @@ import React, { useState } from "react";
 import MyButton from "./ui/MyButton";
 import { CheckCircle2, XCircle, Timer, Brain } from "lucide-react";
 
-const GameDemo = ({ onClose }) => {
-  const [currentStep, setCurrentStep] = useState(0); // 0: Start, 1: Question, 2: Result
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
+interface GameDemoProps {
+  onClose: () => void;
+}
+
+const GameDemo: React.FC<GameDemoProps> = ({ onClose }) => {
+  const [currentStep, setCurrentStep] = useState<number>(0); // 0: Start, 1: Question, 2: Result
   const [isCorrect, setIsCorrect] = useState(false);
 
   const question = {
     text: "¿Cuál es el color institucional de la Universidad del Putumayo?",
     options: [
-      { id: "A", text: "Azul Marino", color: "blue" },
-      { id: "B", text: "Verde Bosque", color: "primary", correct: true },
-      { id: "C", text: "Rojo Carmesí", color: "red" },
-      { id: "D", text: "Amarillo Oro", color: "yellow" },
+      { id: "A", text: "Azul Marino", color: "blue" as const },
+      { id: "B", text: "Verde Bosque", color: "primary" as const, correct: true },
+      { id: "C", text: "Rojo Carmesí", color: "danger" as const },
+      { id: "D", text: "Amarillo Oro", color: "yellow" as const },
     ],
   };
 
-  const handleAnswer = (option) => {
-    setSelectedAnswer(option.id);
+  const handleAnswer = (option: { id: string; text: string; color: "primary" | "secondary" | "danger" | "purple" | "blue" | "yellow" | undefined; correct?: boolean }) => {
     setIsCorrect(!!option.correct);
     setCurrentStep(2);
   };

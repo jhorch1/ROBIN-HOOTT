@@ -1,14 +1,19 @@
-import { forwardRef } from "react";
+import { forwardRef, InputHTMLAttributes, CSSProperties } from "react";
+
+interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  error?: string;
+}
 
 /**
  * FormInput - Input reutilizable con soporte para errores
  * Compatible con React Hook Form via forwardRef
  */
-const FormInput = forwardRef(function FormInput(
+const FormInput = forwardRef<HTMLInputElement, FormInputProps>(function FormInput(
   { label, type = "text", placeholder, error, ...rest },
   ref
 ) {
-  const wrapperStyle = {
+  const wrapperStyle: CSSProperties = {
     display: "flex",
     flexDirection: "column",
     gap: "6px",

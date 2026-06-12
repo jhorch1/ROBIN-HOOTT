@@ -2,13 +2,23 @@
  * CustomCard - Tarjeta reutilizable con estilo de mosaico (Kahoot-inspired)
  * Acepta título, ícono, children y variante de color
  */
+import React, { CSSProperties } from 'react';
+
+interface CustomCardProps {
+  title?: React.ReactNode;
+  icon?: React.ReactNode;
+  children?: React.ReactNode;
+  variant?: "default" | "purple" | "blue" | "red" | "yellow";
+  style?: CSSProperties;
+}
+
 export default function CustomCard({ 
   title, 
   icon, 
   children, 
   variant = "default",
   style: customStyle = {} 
-}) {
+}: CustomCardProps) {
   const variants = {
     default: { borderTop: "4px solid var(--color-primary)", color: "var(--color-primary)" },
     purple: { borderTop: "4px solid var(--color-kahoot-purple)", color: "var(--color-kahoot-purple)" },
@@ -19,7 +29,7 @@ export default function CustomCard({
 
   const currentVariant = variants[variant] || variants.default;
 
-  const cardStyle = {
+  const cardStyle: CSSProperties = {
     backgroundColor: "var(--color-bg-card)",
     borderRadius: "var(--border-radius)",
     padding: "32px",
@@ -33,13 +43,16 @@ export default function CustomCard({
     ...customStyle,
   };
 
-  const headerStyle = {
+  const headerStyle: React.CSSProperties = {
     display: "flex",
-    alignItems: "center",
+    alignItems: "center" as const,
     gap: "12px",
+    marginBottom: "20px",
+    paddingBottom: "15px",
+    borderBottom: "1px solid var(--color-border)",
   };
 
-  const iconStyle = {
+  const iconStyle: React.CSSProperties = {
     fontSize: "1.5rem",
     backgroundColor: "var(--color-icon-bg)",
     width: "48px",

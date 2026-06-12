@@ -3,6 +3,19 @@
  * Soporta variantes: primary, secondary, danger, purple, blue, yellow
  * Muestra estado "Cargando..." con isSubmitting
  */
+import React, { CSSProperties } from 'react';
+
+interface MyButtonProps {
+  children: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  type?: "button" | "submit" | "reset";
+  variant?: "primary" | "secondary" | "danger" | "purple" | "blue" | "yellow";
+  disabled?: boolean;
+  isSubmitting?: boolean;
+  fullWidth?: boolean;
+  style?: CSSProperties;
+}
+
 export default function MyButton({
   children,
   onClick,
@@ -12,8 +25,8 @@ export default function MyButton({
   isSubmitting = false,
   fullWidth = false,
   style: customStyle = {},
-}) {
-  const base = {
+}: MyButtonProps) {
+  const base: CSSProperties = {
     padding: "12px 24px",
     borderRadius: "12px",
     border: "none",
@@ -66,13 +79,13 @@ export default function MyButton({
     },
   };
 
-  const handleMouseDown = (e) => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled || isSubmitting) return;
     e.currentTarget.style.transform = "translateY(2px)";
     e.currentTarget.style.boxShadow = "0 2px 0 rgba(0,0,0,0.2)";
   };
 
-  const handleMouseUp = (e) => {
+  const handleMouseUp = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled || isSubmitting) return;
     e.currentTarget.style.transform = "translateY(0)";
     e.currentTarget.style.boxShadow = variants[variant]?.boxShadow || "none";

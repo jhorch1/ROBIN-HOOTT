@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
  * Navbar - Barra de navegación institucional (Estilo Uniputumayo)
  */
 export default function Navbar() {
-  const { usuario, cerrarSesion } = useAuth();
+  const { usuario, logout: cerrarSesion } = useAuth();
   const navigate = useNavigate();
   const [isDark, setIsDark] = useState(false);
 

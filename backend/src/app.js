@@ -41,6 +41,7 @@ const allowedOrigins = [
   "http://127.0.0.1:5001",
   "http://127.0.0.1:5000",
   process.env.FRONTEND_URL, // URL de producción Render (sin barra al final)
+  process.env.FRONTEND_URL_RENDER,
 ].filter(Boolean);
 
 app.use(

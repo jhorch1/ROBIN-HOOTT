@@ -26,10 +26,27 @@ httpServer.on("error", (error) => {
   process.exit(1);
 });
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:4173",
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5001",
+  "http://localhost:5000",
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:4173",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:5174",
+  "http://127.0.0.1:5001",
+  "http://127.0.0.1:5000",
+  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL_RENDER,
+].filter(Boolean);
+
 const io = new Server(httpServer, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:3000"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
   },
 });
